@@ -1,0 +1,5 @@
+game:
+  parameters:
+    rows: 5
+    cells: 5
+    bombs: 7
