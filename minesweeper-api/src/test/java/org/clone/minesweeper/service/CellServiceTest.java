@@ -32,7 +32,7 @@ public class CellServiceTest {
         Cell [][]grid =  {{rowZeroCellZero,rowZeroCellOne},{rowOneCellZero,rowOneCellOne}};
         Grid gridInstance = Grid.createInstance(grid, List.of(new Cell.Position(1,0)));
 
-        CellHitResponseDTO response = cellService.hitCell(rowOneCellZero,gridInstance);
+        CellHitResponseDTO response = cellService.reveal(rowOneCellZero,gridInstance);
         assertThat(response.getCellHit())
                 .isEqualTo(new CellDTO(new Cell.Position(1,0),true,0));
         assertTrue(response.isHitCellABom());
@@ -62,7 +62,7 @@ public class CellServiceTest {
 
         Grid gridInstance = Grid.createInstance(grid, List.of(new Cell.Position(1,1), new Cell.Position(1,2)));
 
-        CellHitResponseDTO response = cellService.hitCell(rowZeroCellTwo,gridInstance);
+        CellHitResponseDTO response = cellService.reveal(rowZeroCellTwo,gridInstance);
         assertThat(response.getCellHit())
                 .isEqualTo(new CellDTO(new Cell.Position(0,2),true,2));
     }

@@ -12,7 +12,7 @@ import java.util.List;
 @Service
 public class CellService {
 
-    public CellHitResponseDTO hitCell(Cell cell, Grid grid) {
+    public CellHitResponseDTO reveal(Cell cell, Grid grid) {
         cell.setVisited(true);
         CellDTO hitCellDTO;
         if (cell.isBomb()) {
@@ -34,6 +34,10 @@ public class CellService {
         }
         hitCellDTO = new CellDTO(cell.getPosition(),true,adjacentBombsCount);
         return new CellHitResponseDTO(hitCellDTO,adjacentsVisited,false);
+    }
+
+    public void markAsPossibleBomb(Cell cell) {
+        cell.setPotentialBomb(true);
     }
 
     private void traverseCellAdjacent(

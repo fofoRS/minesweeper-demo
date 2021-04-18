@@ -14,8 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.List;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -52,5 +50,36 @@ public class CellControllerIntegrationTest {
                 .param("positionY", "5"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string("Column Position is out of boundary."));
+    }
+
+    @Test
+    public void mark_returnsInternalServerErrorStatus_whenGridInstanceNotFound() throws Exception {
+        Grid.destroyGrid();
+        mvc.perform(post("/api/v1/cells/mark")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("positionX", "1")
+                .param("positionY", "2"))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    public void mark_returnsBadRequest_whenPositionGraterThanGridBoundaries() throws Exception {
+        gridService.createNewGrid(new GameParametersDTO(7,4,10));
+        mvc.perform(post("/api/v1/cells/mark")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("positionX", "8")
+                .param("positionY", "3"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Row Position is out of boundary."));
+    }
+
+    @Test
+    public void mark_returnsNotContent() throws Exception {
+        gridService.createNewGrid(new GameParametersDTO(7,7,10));
+        mvc.perform(post("/api/v1/cells/mark")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("positionX", "6")
+                .param("positionY", "3"))
+                .andExpect(status().isNoContent());
     }
 }

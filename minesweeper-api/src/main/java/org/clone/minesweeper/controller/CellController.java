@@ -6,10 +6,7 @@ import org.clone.minesweeper.model.Grid;
 import org.clone.minesweeper.model.web.CellHitResponseDTO;
 import org.clone.minesweeper.service.CellService;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/cells")
@@ -32,7 +29,22 @@ public class CellController {
 
         validatePositions(positionX, positionY, grid);
         Cell cell = grid.getGrid()[positionX][positionY];
-        return cellService.hitCell(cell,grid);
+        return cellService.reveal(cell,grid);
+    }
+
+    @PostMapping(value = "/mark", params = {"positionX", "positionY"})
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void markCell(@RequestParam Integer positionX, @RequestParam Integer positionY) {
+        Grid grid;
+        try {
+            grid = Grid.getGridInstance();
+        } catch (IllegalStateException e) {
+            throw new ApiException("Grid has not been created yet.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        validatePositions(positionX, positionY, grid);
+        Cell cell = grid.getGrid()[positionX][positionY];
+        cellService.markAsPossibleBomb(cell);
+
     }
 
     private void validatePositions(Integer positionX, Integer positionY, Grid grid) {

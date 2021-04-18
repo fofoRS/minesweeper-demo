@@ -6,8 +6,9 @@ import java.util.Objects;
 public class Cell {
 
     private final Position position;
-    private boolean isVisited;
     private final boolean isBomb;
+    private boolean isVisited;
+    private boolean potentialBomb;
     private List<Position> adjacents;
 
     public Cell(Position position, boolean isBomb) {
@@ -45,6 +46,17 @@ public class Cell {
         this.adjacents = adjacents;
     }
 
+    public boolean isPotentialBomb() {
+        return potentialBomb;
+    }
+
+    public void setPotentialBomb(boolean potentialBomb) {
+        this.potentialBomb = potentialBomb;
+    }
+
+    public void setAdjacents(List<Position> adjacents) {
+        this.adjacents = adjacents;
+    }
 
     public static class Position {
         private int x,y;

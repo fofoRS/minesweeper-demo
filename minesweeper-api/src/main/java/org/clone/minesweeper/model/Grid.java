@@ -27,4 +27,8 @@ public class Grid {
         }
         return INSTANCE;
     }
+
+    public static void destroyGrid() {
+        INSTANCE = null;
+    }
 }
