@@ -2,12 +2,17 @@ package org.clone.minesweeper.model.web;
 
 import javax.validation.constraints.PositiveOrZero;
 
-public class CreateGameRequest {
-    @PositiveOrZero
+public class GridParametersRequestDTO {
     private int rows;
-    @PositiveOrZero
     private int cells;
     private int numberOfBombs;
+
+    public GridParametersRequestDTO(@PositiveOrZero int rows, @PositiveOrZero int cells, int numberOfBombs) {
+        this.rows = rows;
+        this.cells = cells;
+        this.numberOfBombs = numberOfBombs;
+    }
+    public GridParametersRequestDTO() { }
 
     public int getRows() {
         return rows;

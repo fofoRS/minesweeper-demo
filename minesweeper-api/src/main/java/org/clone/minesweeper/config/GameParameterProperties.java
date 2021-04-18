@@ -2,7 +2,7 @@ package org.clone.minesweeper.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "game.match.parameters")
+@ConfigurationProperties(prefix = "game.parameters")
 public class GameParameterProperties {
     private Integer rows;
     private Integer cells;
