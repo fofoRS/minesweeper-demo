@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+import static org.clone.minesweeper.exception.ApiExceptionMessages.GAME_NOT_FOUND_MSG_TEMPLATE;
+
 @Service
 public class GameService {
 
@@ -32,9 +34,7 @@ public class GameService {
         return new GameResponseDTO(createdGame.getId(),gridResponse,false);
     }
 
-    public GridResponseDTO resetGame(Long gameId) {
-        Game game = getGame(gameId).orElseThrow(() ->
-                new ApiException("Game not found for id: " + gameId, HttpStatus.NOT_FOUND));
+    public GridResponseDTO resetGame(Game game) {
         Grid grid = game.getGrid();
         GameParametersDTO gridParameters =
                 new GameParametersDTO(grid.getRows(),grid.getColumns(), grid.getBombsPositions().size());

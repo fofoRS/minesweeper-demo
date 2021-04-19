@@ -6,10 +6,9 @@ import org.clone.minesweeper.model.GameParametersDTO;
 import org.clone.minesweeper.model.web.GameParametersRequestDTO;
 import org.springframework.http.HttpStatus;
 
-public abstract class BaseGameController {
+import static org.clone.minesweeper.exception.ApiExceptionMessages.NO_CELLS_AVAILABLE_FOR_BOMBS;
 
-    public static final String NO_CELLS_AVAILABLE_FOR_BOMBS =
-            "Number of bombs greater than total of cells";
+public abstract class BaseGameController {
 
     protected void validateRequestArguments(GameParametersRequestDTO request){
         if(request.getNumberOfBombs() > (request.getRows() * request.getCells())) {

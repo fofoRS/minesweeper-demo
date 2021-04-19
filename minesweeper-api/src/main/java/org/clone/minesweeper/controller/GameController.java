@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.clone.minesweeper.config.GameParameterProperties;
+import org.clone.minesweeper.exception.ApiException;
+import org.clone.minesweeper.model.Game;
 import org.clone.minesweeper.model.GameParametersDTO;
 import org.clone.minesweeper.model.web.GameParametersRequestDTO;
 import org.clone.minesweeper.model.web.GameResponseDTO;
@@ -17,6 +19,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.annotation.SessionScope;
 
 import javax.validation.Valid;
+
+import static org.clone.minesweeper.exception.ApiExceptionMessages.GAME_IS_OVER;
+import static org.clone.minesweeper.exception.ApiExceptionMessages.GAME_NOT_FOUND_MSG_TEMPLATE;
 
 @RestController
 @RequestMapping("/api/v1/game")
@@ -48,6 +53,16 @@ public class GameController extends BaseGameController {
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
     public GridResponseDTO resetGame(@PathVariable Long id) {
-        return gameService.resetGame(id);
+        Game game = gameService.getGame(id).orElseThrow(() ->
+                new ApiException(
+                        String.format(GAME_NOT_FOUND_MSG_TEMPLATE,id), HttpStatus.NOT_FOUND));
+        checkIfGameIsOver(game);
+        return gameService.resetGame(game);
+    }
+
+    private void checkIfGameIsOver(Game game) {
+        if (game.isGameOver()) {
+            throw  new ApiException(GAME_IS_OVER, HttpStatus.UNPROCESSABLE_ENTITY);
+        }
     }
 }

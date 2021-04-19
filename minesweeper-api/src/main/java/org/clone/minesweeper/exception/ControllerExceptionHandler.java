@@ -23,7 +23,11 @@ public class ControllerExceptionHandler {
                     responseCode = "400"),
             @ApiResponse(
                     description = "Response Code when game requested is not found",
-                    responseCode = "404")})
+                    responseCode = "404"),
+            @ApiResponse(
+                    description = "Response Code when Game is over" +
+                                  " and not further operations are allowed.",
+                    responseCode = "422")})
     @ExceptionHandler(value = ApiException.class)
     public ResponseEntity<ApiErrorResponse> apiExceptionHandler(ApiException e) {
         HttpStatus httpStatus = e.getStatus();
