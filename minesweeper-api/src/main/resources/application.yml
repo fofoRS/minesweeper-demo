@@ -4,13 +4,5 @@ game:
     cells: 5
     bombs: 7
 springdoc:
-  use-management-port: true
-management:
-  server:
-    port: 9091
-  endpoints:
-    web:
-      exposure:
-        include:
-          - openapi
-          - swaggerui
+  swagger-ui:
+      path: /api/doc
