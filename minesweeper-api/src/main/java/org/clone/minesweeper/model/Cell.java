@@ -8,8 +8,9 @@ public class Cell {
     private final Position position;
     private final boolean isBomb;
     private boolean isVisited;
-    private boolean potentialBomb;
+    private boolean mark;
     private List<Position> adjacents;
+    private int adjacentsBombsCount;
 
     public Cell(Position position, boolean isBomb) {
         this.position = position;
@@ -46,16 +47,24 @@ public class Cell {
         this.adjacents = adjacents;
     }
 
-    public boolean isPotentialBomb() {
-        return potentialBomb;
+    public boolean isMark() {
+        return mark;
     }
 
-    public void setPotentialBomb(boolean potentialBomb) {
-        this.potentialBomb = potentialBomb;
+    public void setMark(boolean mark) {
+        this.mark = mark;
     }
 
     public void setAdjacents(List<Position> adjacents) {
         this.adjacents = adjacents;
+    }
+
+    public int getAdjacentsBombsCount() {
+        return adjacentsBombsCount;
+    }
+
+    public void setAdjacentsBombsCount(int adjacentsBombsCount) {
+        this.adjacentsBombsCount = adjacentsBombsCount;
     }
 
     public static class Position {

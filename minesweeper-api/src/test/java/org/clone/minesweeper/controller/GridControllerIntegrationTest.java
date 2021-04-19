@@ -1,7 +1,7 @@
 package org.clone.minesweeper.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.clone.minesweeper.model.web.GridParametersRequestDTO;
+import org.clone.minesweeper.model.web.GameParametersRequestDTO;
 import org.clone.minesweeper.model.web.GridResponseDTO;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +37,7 @@ public class GridControllerIntegrationTest {
 
     @Test
     public void requestToStartGame_responseWithBadRequest_WhenMoreBombsThanCells() throws Exception {
-        GridParametersRequestDTO badRequest = new GridParametersRequestDTO(4,4,17);
+        GameParametersRequestDTO badRequest = new GameParametersRequestDTO(4,4,17);
         mvc.perform(post("/api/v1/grid")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(badRequest)))
@@ -47,7 +47,7 @@ public class GridControllerIntegrationTest {
 
     @Test
     public void requestToStartGame_getGridWithRowsAndCellRequest() throws Exception {
-        GridParametersRequestDTO badRequest = new GridParametersRequestDTO(4,4,0);
+        GameParametersRequestDTO badRequest = new GameParametersRequestDTO(4,4,0);
         MvcResult result = mvc.perform(post("/api/v1/grid")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(badRequest)))

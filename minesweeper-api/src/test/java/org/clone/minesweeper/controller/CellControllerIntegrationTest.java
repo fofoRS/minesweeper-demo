@@ -5,6 +5,7 @@ import org.clone.minesweeper.model.GameParametersDTO;
 import org.clone.minesweeper.model.Grid;
 import org.clone.minesweeper.service.CellService;
 import org.clone.minesweeper.service.GridService;
+import org.clone.minesweeper.util.GameStorage;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,9 @@ public class CellControllerIntegrationTest {
 
     @Autowired
     private GridService gridService;
+
+    @Autowired
+    private GameStorage gameStorage;
 
     @Autowired
     private MockMvc mvc;
@@ -54,12 +58,11 @@ public class CellControllerIntegrationTest {
 
     @Test
     public void mark_returnsInternalServerErrorStatus_whenGridInstanceNotFound() throws Exception {
-        Grid.destroyGrid();
         mvc.perform(post("/api/v1/cells/mark")
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("positionX", "1")
                 .param("positionY", "2"))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isNotFound());
     }
 
     @Test

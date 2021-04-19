@@ -39,4 +39,8 @@ public class GameStorage {
         return game;
     }
 
+    public Game getById(Long id) {
+        return gamesTable.get(id);
+    }
+
 }

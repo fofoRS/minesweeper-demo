@@ -1,4 +1,4 @@
-package org.clone.minesweeper.controller;
+package org.clone.minesweeper.exception;
 
 import org.clone.minesweeper.exception.ApiException;
 import org.springframework.http.HttpStatus;
