@@ -1,5 +1,9 @@
 package org.clone.minesweeper.controller;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.clone.minesweeper.exception.ApiException;
 import org.clone.minesweeper.model.Cell;
 import org.clone.minesweeper.model.Game;
@@ -23,6 +27,9 @@ public class CellController {
         this.gameService = gameService;
     }
 
+    @Operation(
+            method = "POST",
+            description = "Reveals a cell using its position (x,y).")
     @PostMapping(value = "/hit", params = {"positionX", "positionY"})
     public CellHitResponseDTO handleHitCell(
             @PathVariable Long id, @RequestParam Integer positionX, @RequestParam Integer positionY) {
@@ -39,6 +46,9 @@ public class CellController {
         return cellService.reveal(cellPosition,game);
     }
 
+    @Operation(
+            method = "POST",
+            description = "Marks a cell as a potential bomb using its position (x,y).")
     @PostMapping(value = "/mark", params = {"positionX", "positionY"})
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void markCell(@PathVariable Long id, @RequestParam Integer positionX, @RequestParam Integer positionY) {
