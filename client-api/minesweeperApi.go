@@ -1,7 +1,17 @@
 package client
 
+type MinesweeperApiErr struct {
+	ErrorMessage string
+}
+
+func (err MinesweeperApiErr) Error() string {
+	return err.ErrorMessage
+}
+
 type GameParameters struct {
-	Rows, Columns, NumberOfBombs uint8
+	Rows          uint8 `json:"rows"`
+	Columns       uint8 `json:"cells"`
+	NumberOfBombs uint8 `json:"numberOfBombs"`
 }
 
 type Game struct {
@@ -25,6 +35,14 @@ type MinesWeeperClient struct {
 
 func (client *MinesWeeperClient) StartGame() (*Game, *WebError) {
 	return client.webClient.StartGame()
+}
+
+func (client *MinesWeeperClient) ResetGame(game Game) (*Game, *WebError) {
+	grid, err := client.webClient.resetGame(game.Id)
+	if err != nil {
+		return nil, err
+	}
+	return &Game{game.Id, game.IsGameOver, *grid}, nil
 }
 
 func NewApiClient(baseURL string, options ...func(*GameParameters)) *MinesWeeperClient {
