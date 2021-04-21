@@ -8,12 +8,12 @@ import (
 )
 
 type WebError struct {
-	code         uint8
-	errorMessage string
+	Code         uint8
+	ErrorMessage string
 }
 
 func (err WebError) Error() string {
-	return err.errorMessage
+	return err.ErrorMessage
 }
 
 type webClient struct {
@@ -32,12 +32,12 @@ const (
 func (web webClient) StartGame() (*Game, *WebError) {
 	dataBytes, err := json.Marshal(web.parameters)
 	if err != nil {
-		return nil, &WebError{errorMessage: "Error parsing request into Json format."}
+		return nil, &WebError{ErrorMessage: "Error parsing request into Json format."}
 	}
 	enpointURL := fmt.Sprintf("%s/api/v1/game", defaultURL)
 	response, callErr := http.Post(enpointURL, "application/json", bytes.NewReader(dataBytes))
 	if callErr != nil {
-		return nil, &WebError{errorMessage: err.Error()}
+		return nil, &WebError{ErrorMessage: err.Error()}
 	}
 	defer response.Body.Close()
 
@@ -47,7 +47,7 @@ func (web webClient) StartGame() (*Game, *WebError) {
 		responseErrorBody := &ResponseErrorBody{}
 		decodeError := errorResponseDecoder.Decode(responseErrorBody)
 		if decodeError != nil {
-			return nil, &WebError{errorMessage: decodeError.Error()}
+			return nil, &WebError{ErrorMessage: decodeError.Error()}
 		}
 		return nil, &WebError{uint8(response.StatusCode), responseErrorBody.message}
 	}
@@ -56,7 +56,7 @@ func (web webClient) StartGame() (*Game, *WebError) {
 	game := &Game{}
 	decodeError := successResponseDecoder.Decode(game)
 	if decodeError != nil {
-		return nil, &WebError{errorMessage: decodeError.Error()}
+		return nil, &WebError{ErrorMessage: decodeError.Error()}
 	}
 	return game, nil
 }

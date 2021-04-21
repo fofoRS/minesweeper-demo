@@ -6,17 +6,17 @@ type GameParameters struct {
 
 type Game struct {
 	Id         uint64
-	isGameOver bool
-	grid       grid
+	IsGameOver bool `json:"gameOver"`
+	Grid       Grid
 }
 
-type grid struct {
-	cellPositions [][]position
-	bombPositions [][]position
+type Grid struct {
+	CellPositions []position `json:"positions"`
+	BombPositions []position `json:"bombPositions"`
 }
 
 type position struct {
-	x, y uint8
+	X, Y uint8
 }
 
 type MinesWeeperClient struct {
