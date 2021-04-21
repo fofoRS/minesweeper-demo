@@ -23,6 +23,10 @@ type MinesWeeperClient struct {
 	webClient *webClient
 }
 
+func (client *MinesWeeperClient) startGame() (*Game, *WebError) {
+	return client.webClient.StartGame()
+}
+
 func NewApiClient(baseURL string, options ...func(*GameParameters)) *MinesWeeperClient {
 	gameParameters := &GameParameters{}
 	for _, option := range options {
