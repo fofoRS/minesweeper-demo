@@ -23,7 +23,7 @@ type MinesWeeperClient struct {
 	webClient *webClient
 }
 
-func (client *MinesWeeperClient) startGame() (*Game, *WebError) {
+func (client *MinesWeeperClient) StartGame() (*Game, *WebError) {
 	return client.webClient.StartGame()
 }
 
