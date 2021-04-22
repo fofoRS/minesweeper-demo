@@ -1,13 +1,9 @@
 package org.clone.minesweeper.service;
 
-import org.clone.minesweeper.exception.ApiException;
 import org.clone.minesweeper.model.Cell;
-import org.clone.minesweeper.model.Game;
-import org.clone.minesweeper.model.Grid;
 import org.clone.minesweeper.model.GameParametersDTO;
+import org.clone.minesweeper.model.Grid;
 import org.clone.minesweeper.model.web.GridResponseDTO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;

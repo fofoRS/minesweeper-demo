@@ -1,7 +1,5 @@
 package org.clone.minesweeper.model.web;
 
-import org.clone.minesweeper.model.Grid;
-
 public class GameResponseDTO {
     private Long id;
     private GridResponseDTO grid;

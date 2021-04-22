@@ -1,10 +1,6 @@
 package org.clone.minesweeper.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.clone.minesweeper.config.GameParameterProperties;
 import org.clone.minesweeper.exception.ApiException;
 import org.clone.minesweeper.model.Game;
@@ -16,7 +12,6 @@ import org.clone.minesweeper.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.annotation.SessionScope;
 
 import javax.validation.Valid;
 

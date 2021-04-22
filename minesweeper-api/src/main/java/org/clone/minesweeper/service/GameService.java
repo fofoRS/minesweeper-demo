@@ -13,8 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-import static org.clone.minesweeper.exception.ApiExceptionMessages.GAME_NOT_FOUND_MSG_TEMPLATE;
-
 @Service
 public class GameService {
 
