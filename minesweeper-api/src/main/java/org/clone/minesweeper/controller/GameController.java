@@ -44,7 +44,7 @@ public class GameController extends BaseGameController {
     }
 
     @Operation(method = "PATCH", description = "Handles the resetting of the grid for a given game.")
-    @PatchMapping("/reset/{id}")
+    @PatchMapping("/{id}/reset")
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
     public GridResponseDTO resetGame(@PathVariable Long id) {

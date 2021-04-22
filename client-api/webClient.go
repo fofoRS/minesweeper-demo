@@ -68,9 +68,9 @@ func (web webClient) StartGame() (*Game, *WebError) {
 func (web webClient) resetGame(id uint64) (*Grid, *WebError) {
 	var enpointURL string
 	if len(web.baseURL) == 0 {
-		enpointURL = fmt.Sprintf("%s/api/v1/game/reset/%d", defaultURL, id)
+		enpointURL = fmt.Sprintf("%s/api/v1/game/%d/reset", defaultURL, id)
 	} else {
-		enpointURL = fmt.Sprintf("%s/api/v1/game/reset/%d", web.baseURL, id)
+		enpointURL = fmt.Sprintf("%s/api/v1/game/%d/reset", web.baseURL, id)
 	}
 	client := &http.Client{}
 	req, _ := http.NewRequest("PATCH", enpointURL, nil)
