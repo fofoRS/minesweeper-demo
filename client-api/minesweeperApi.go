@@ -21,11 +21,11 @@ type Game struct {
 }
 
 type Grid struct {
-	CellPositions []position `json:"positions"`
-	BombPositions []position `json:"bombPositions"`
+	CellPositions []Position `json:"positions"`
+	BombPositions []Position `json:"bombPositions"`
 }
 
-type position struct {
+type Position struct {
 	X, Y uint8
 }
 
@@ -36,7 +36,7 @@ type RevealCellResponse struct {
 }
 
 type RevealedCell struct {
-	CellPosition   position `json:"position"`
+	CellPosition   Position `json:"position"`
 	NearBombsCount uint8
 	Visited        bool
 }
@@ -45,10 +45,17 @@ type MinesWeeperClient struct {
 	webClient *webClient
 }
 
+// Start a new game with the parameter provided when MinesWeeperClient was created
+// or with default parameters if any were provided.
 func (client *MinesWeeperClient) StartGame() (*Game, *WebError) {
 	return client.webClient.StartGame()
 }
 
+// Resets the grid of an existing game, and a new grid with the same parameters is create.
+// This fuction return a new instance of the type Game that contains a new Grid.
+// NOTE: only the create is reset, the game will kep the same id.
+// The Game instance contains the positions of the bombs, so the caller can use the attribute
+// to perform the checking with the needed to go to the api.
 func (client *MinesWeeperClient) ResetGame(game Game) (*Game, *WebError) {
 	grid, err := client.webClient.resetGame(game.Id)
 	if err != nil {
@@ -57,14 +64,24 @@ func (client *MinesWeeperClient) ResetGame(game Game) (*Game, *WebError) {
 	return &Game{game.Id, game.IsGameOver, *grid}, nil
 }
 
-func (client *MinesWeeperClient) RevealCell(id uint64, Position position) (*RevealCellResponse, *WebError) {
-	revealedCell, err := client.webClient.revealCell(id, Position.X, Position.Y)
+// Reveals an specific cell, providing the position of the cell.
+// It returns the cell position, if the cell is a bomb and the list of the neighboor cell revelead too.
+// As well as the number of adjacents bombs.
+func (client *MinesWeeperClient) RevealCell(id uint64, cellPosition Position) (*RevealCellResponse, *WebError) {
+	revealedCell, err := client.webClient.revealCell(id, cellPosition.X, cellPosition.Y)
 	if err != nil {
 		return nil, err
 	}
 	return revealedCell, nil
 }
 
+// Marks a cell as a potential bomb providing the cell position.
+func (client *MinesWeeperClient) MarkCell(id uint64, cellPosition Position) *WebError {
+	return client.webClient.markCell(id, cellPosition.X, cellPosition.Y)
+}
+
+// This function creates a new MinesWeeperClient instance  which is the main entry point component
+// to interate with the library and to perform the actions that call the backend api endpoints.
 func NewApiClient(baseURL string, options ...func(*GameParameters)) *MinesWeeperClient {
 	gameParameters := &GameParameters{}
 	for _, option := range options {

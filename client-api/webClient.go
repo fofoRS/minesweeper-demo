@@ -36,7 +36,12 @@ func (web webClient) StartGame() (*Game, *WebError) {
 	if err != nil {
 		return nil, &WebError{ErrorMessage: "Error parsing request into Json format."}
 	}
-	enpointURL := fmt.Sprintf("%s/api/v1/game", defaultURL)
+	var enpointURL string
+	if len(web.baseURL) == 0 {
+		enpointURL = fmt.Sprintf("%s/api/v1/game", defaultURL)
+	} else {
+		enpointURL = fmt.Sprintf("%s/api/v1/game", web.baseURL)
+	}
 	response, callErr := http.Post(enpointURL, "application/json", bytes.NewReader(dataBytes))
 	if callErr != nil {
 		return nil, &WebError{ErrorMessage: err.Error()}
@@ -44,16 +49,13 @@ func (web webClient) StartGame() (*Game, *WebError) {
 	defer response.Body.Close()
 
 	responseBody := response.Body
-	if response.StatusCode != http.StatusCreated {
-		errorResponseDecoder := json.NewDecoder(responseBody)
-		responseErrorBody := &ResponseErrorBody{}
-		decodeError := errorResponseDecoder.Decode(responseErrorBody)
-		if decodeError != nil {
-			return nil, &WebError{ErrorMessage: decodeError.Error()}
-		}
-		return nil, &WebError{uint8(response.StatusCode), responseErrorBody.message}
+	statusCodeEvaluator := func(statusCode int) bool {
+		return statusCode == http.StatusCreated
 	}
-
+	checkError := checkResponseStatus(*response, statusCodeEvaluator)
+	if checkError != nil {
+		return nil, checkError
+	}
 	successResponseDecoder := json.NewDecoder(responseBody)
 	game := &Game{}
 	decodeError := successResponseDecoder.Decode(game)
@@ -64,7 +66,12 @@ func (web webClient) StartGame() (*Game, *WebError) {
 }
 
 func (web webClient) resetGame(id uint64) (*Grid, *WebError) {
-	enpointURL := fmt.Sprintf("%s/api/v1/game/reset/%d", defaultURL, id)
+	var enpointURL string
+	if len(web.baseURL) == 0 {
+		enpointURL = fmt.Sprintf("%s/api/v1/game/reset/%d", defaultURL, id)
+	} else {
+		enpointURL = fmt.Sprintf("%s/api/v1/game/reset/%d", web.baseURL, id)
+	}
 	client := &http.Client{}
 	req, _ := http.NewRequest("PATCH", enpointURL, nil)
 	response, callErr := client.Do(req)
@@ -74,16 +81,13 @@ func (web webClient) resetGame(id uint64) (*Grid, *WebError) {
 	defer response.Body.Close()
 
 	responseBody := response.Body
-	if response.StatusCode != http.StatusOK {
-		errorResponseDecoder := json.NewDecoder(responseBody)
-		responseErrorBody := &ResponseErrorBody{}
-		decodeError := errorResponseDecoder.Decode(responseErrorBody)
-		if decodeError != nil {
-			return nil, &WebError{ErrorMessage: decodeError.Error()}
-		}
-		return nil, &WebError{uint8(response.StatusCode), responseErrorBody.message}
+	statusCodeEvaluator := func(statusCode int) bool {
+		return statusCode == http.StatusOK
 	}
-
+	checkError := checkResponseStatus(*response, statusCodeEvaluator)
+	if checkError != nil {
+		return nil, checkError
+	}
 	successResponseDecoder := json.NewDecoder(responseBody)
 	grid := &Grid{}
 	decodeError := successResponseDecoder.Decode(grid)
@@ -94,7 +98,13 @@ func (web webClient) resetGame(id uint64) (*Grid, *WebError) {
 }
 
 func (web webClient) revealCell(id uint64, positionX, positionY uint8) (*RevealCellResponse, *WebError) {
-	enpointURL, err := url.Parse(fmt.Sprintf("%s/api/v1/game/%d/cells/hit", defaultURL, id))
+	var baseURL string
+	if len(web.baseURL) == 0 {
+		baseURL = defaultURL
+	} else {
+		baseURL = web.baseURL
+	}
+	enpointURL, err := url.Parse(fmt.Sprintf("%s/api/v1/game/%d/cells/hit", baseURL, id))
 	if err != nil {
 		return nil, &WebError{ErrorMessage: err.Error()}
 	}
@@ -107,15 +117,13 @@ func (web webClient) revealCell(id uint64, positionX, positionY uint8) (*RevealC
 		return nil, &WebError{ErrorMessage: callErr.Error()}
 	}
 	defer response.Body.Close()
+	statusCodeEvaluator := func(statusCode int) bool {
+		return statusCode == http.StatusOK
+	}
 	responseBody := response.Body
-	if response.StatusCode != http.StatusOK {
-		errorResponseDecoder := json.NewDecoder(responseBody)
-		responseErrorBody := &ResponseErrorBody{}
-		decodeError := errorResponseDecoder.Decode(responseErrorBody)
-		if decodeError != nil {
-			return nil, &WebError{ErrorMessage: decodeError.Error()}
-		}
-		return nil, &WebError{uint8(response.StatusCode), responseErrorBody.message}
+	checkError := checkResponseStatus(*response, statusCodeEvaluator)
+	if checkError != nil {
+		return nil, checkError
 	}
 
 	successResponseDecoder := json.NewDecoder(responseBody)
@@ -125,4 +133,49 @@ func (web webClient) revealCell(id uint64, positionX, positionY uint8) (*RevealC
 		return nil, &WebError{ErrorMessage: decodeError.Error()}
 	}
 	return revealedResponse, nil
+}
+
+func (web webClient) markCell(id uint64, positionX, positionY uint8) *WebError {
+	var baseURL string
+	if len(web.baseURL) == 0 {
+		baseURL = defaultURL
+	} else {
+		baseURL = web.baseURL
+	}
+	enpointURL, err := url.Parse(fmt.Sprintf("%s/api/v1/game/%d/cells/mark", baseURL, id))
+	if err != nil {
+		return &WebError{ErrorMessage: err.Error()}
+	}
+	params := url.Values{}
+	params.Add("positionX", strconv.FormatUint(uint64(positionX), 10))
+	params.Add("positionY", strconv.FormatUint(uint64(positionY), 10))
+	enpointURL.RawQuery = params.Encode()
+	response, callErr := http.Post(enpointURL.String(), "application/json", nil)
+	if callErr != nil {
+		return &WebError{ErrorMessage: callErr.Error()}
+	}
+	defer response.Body.Close()
+	statusCodeEvaluator := func(statusCode int) bool {
+		return statusCode == http.StatusNoContent
+	}
+	checkError := checkResponseStatus(*response, statusCodeEvaluator)
+	if checkError != nil {
+		return checkError
+	}
+	return nil
+}
+
+func checkResponseStatus(response http.Response, evaluator func(int) bool) *WebError {
+	if evaluator(response.StatusCode) {
+		return nil
+	}
+	responseBody := response.Body
+	errorResponseDecoder := json.NewDecoder(responseBody)
+	responseErrorBody := &ResponseErrorBody{}
+	decodeError := errorResponseDecoder.Decode(responseErrorBody)
+	if decodeError != nil {
+		return &WebError{ErrorMessage: decodeError.Error()}
+	}
+	return &WebError{uint8(response.StatusCode), responseErrorBody.message}
+
 }
