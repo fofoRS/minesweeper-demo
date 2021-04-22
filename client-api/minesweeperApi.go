@@ -29,6 +29,18 @@ type position struct {
 	X, Y uint8
 }
 
+type RevealCellResponse struct {
+	HitCellABom  bool
+	RevealedCell RevealedCell `json:"cellHit"`
+	CellsVisited []RevealedCell
+}
+
+type RevealedCell struct {
+	CellPosition   position `json:"position"`
+	NearBombsCount uint8
+	Visited        bool
+}
+
 type MinesWeeperClient struct {
 	webClient *webClient
 }
@@ -43,6 +55,14 @@ func (client *MinesWeeperClient) ResetGame(game Game) (*Game, *WebError) {
 		return nil, err
 	}
 	return &Game{game.Id, game.IsGameOver, *grid}, nil
+}
+
+func (client *MinesWeeperClient) RevealCell(id uint64, Position position) (*RevealCellResponse, *WebError) {
+	revealedCell, err := client.webClient.revealCell(id, Position.X, Position.Y)
+	if err != nil {
+		return nil, err
+	}
+	return revealedCell, nil
 }
 
 func NewApiClient(baseURL string, options ...func(*GameParameters)) *MinesWeeperClient {

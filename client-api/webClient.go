@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
+	"strconv"
 )
 
 type WebError struct {
@@ -89,4 +91,38 @@ func (web webClient) resetGame(id uint64) (*Grid, *WebError) {
 		return nil, &WebError{ErrorMessage: decodeError.Error()}
 	}
 	return grid, nil
+}
+
+func (web webClient) revealCell(id uint64, positionX, positionY uint8) (*RevealCellResponse, *WebError) {
+	enpointURL, err := url.Parse(fmt.Sprintf("%s/api/v1/game/%d/cells/hit", defaultURL, id))
+	if err != nil {
+		return nil, &WebError{ErrorMessage: err.Error()}
+	}
+	params := url.Values{}
+	params.Add("positionX", strconv.FormatUint(uint64(positionX), 10))
+	params.Add("positionY", strconv.FormatUint(uint64(positionY), 10))
+	enpointURL.RawQuery = params.Encode()
+	response, callErr := http.Post(enpointURL.String(), "application/json", nil)
+	if callErr != nil {
+		return nil, &WebError{ErrorMessage: callErr.Error()}
+	}
+	defer response.Body.Close()
+	responseBody := response.Body
+	if response.StatusCode != http.StatusOK {
+		errorResponseDecoder := json.NewDecoder(responseBody)
+		responseErrorBody := &ResponseErrorBody{}
+		decodeError := errorResponseDecoder.Decode(responseErrorBody)
+		if decodeError != nil {
+			return nil, &WebError{ErrorMessage: decodeError.Error()}
+		}
+		return nil, &WebError{uint8(response.StatusCode), responseErrorBody.message}
+	}
+
+	successResponseDecoder := json.NewDecoder(responseBody)
+	revealedResponse := &RevealCellResponse{}
+	decodeError := successResponseDecoder.Decode(revealedResponse)
+	if decodeError != nil {
+		return nil, &WebError{ErrorMessage: decodeError.Error()}
+	}
+	return revealedResponse, nil
 }
